@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca | Prestamos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --ink: #17324d; --aqua: #0c8d87; --paper: #f4f7f6; --accent: #e5a93f; }
+        body { background: var(--paper); color: var(--ink); font-family: Georgia, "Times New Roman", serif; }
+        .navbar { background: var(--ink); }
+        .brand-mark { color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+        .navbar .nav-link { color: rgb(255 255 255 / 60%); }
+        .navbar .nav-link:hover { color: #fff; }
+        .navbar .nav-link.active { color: var(--accent); font-weight: 700; }
+        .page-header { border-bottom: 3px solid var(--accent); }
+        .panel { background: #fff; border: 1px solid #d9e1df; border-radius: 6px; box-shadow: 0 8px 20px rgb(23 50 77 / 8%); }
+        .table thead th { color: #fff; background: var(--ink); white-space: nowrap; }
+        .btn-primary { background: var(--aqua); border-color: var(--aqua); }
+        .btn-primary:hover { background: #08736e; border-color: #08736e; }
+        .form-control:focus { border-color: var(--aqua); box-shadow: 0 0 0 .2rem rgb(12 141 135 / 18%); }
+        @media (max-width: 767px) { .table { font-size: .86rem; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand brand-mark" th:href="@{/vista/libros}">BIBLIOTECA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/vista/libros}">Libros</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/vista/personas}">Personas</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/vista/prestamos}">Prestamos</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container pb-5">
+        <header class="page-header d-flex justify-content-between align-items-end mb-4 pb-3">
+            <div>
+                <p class="text-uppercase small mb-1 text-secondary">Administracion</p>
+                <h1 class="h2 mb-0">Prestamos</h1>
+            </div>
+            <span class="badge text-bg-light border" th:text="${#lists.size(prestamos)} + ' registrados'">0 registrados</span>
+        </header>
+
+        <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${mensaje}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row g-4">
+            <section class="col-lg-4">
+                <div class="panel p-4">
+                    <h2 class="h5 mb-3">Registrar prestamo</h2>
+                    <form th:action="@{/vista/prestamos/guardar}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="idPersona">Persona</label>
+                            <select id="idPersona" name="idPersona" class="form-select" required>
+                                <option value="">Seleccione una persona</option>
+                                <option th:each="persona : ${personas}"
+                                        th:value="${persona.id}"
+                                        th:text="${persona.nombre + ' ' + persona.apellidoPaterno}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="idLibro">Libro</label>
+                            <select id="idLibro" name="idLibro" class="form-select" required>
+                                <option value="">Seleccione un libro</option>
+                                <option th:each="libro : ${libros}"
+                                        th:value="${libro.isbn}"
+                                        th:text="${libro.titulo}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="fechaDevolucion">Fecha de Devolucion</label>
+                            <input type="datetime-local" id="fechaDevolucion" name="fechaDevolucion" class="form-control">
+                        </div>
+                        <p class="small text-secondary mb-3">La fecha de prestamo se asigna automaticamente al guardar. La fecha de devolucion es opcional.</p>
+                        <button class="btn btn-primary w-100" type="submit">Guardar prestamo</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="col-lg-8">
+                <div class="panel p-3 p-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 mb-0">Registros</h2><input id="buscador" class="form-control form-control-sm w-auto" type="search" placeholder="Buscar por persona o libro"></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="tablaPrestamos">
+                            <thead><tr><th>Id</th><th>Persona</th><th>Libro</th><th>Fecha de Prestamo</th><th>Fecha de Devolucion</th><th class="text-end">Acciones</th></tr></thead>
+                            <tbody>
+                                <tr th:each="item : ${prestamos}">
+                                    <td th:text="${item.id}"></td>
+                                    <td th:text="${item.socio.nombre + ' ' + item.socio.apellidoPaterno}"></td>
+                                    <td th:text="${item.libro.titulo}"></td>
+                                    <td th:text="${#temporals.format(item.fechaPrestamo, 'dd/MM/yyyy hh:mm a')}"></td>
+                                    <td th:text="${#temporals.format(item.fechaDevolucion, 'dd/MM/yyyy hh:mm a')} ?: '—'"></td>
+                                    <td class="text-end text-nowrap">
+                                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="modal" th:data-bs-target="'#editar-' + ${item.id}">Editar</button>
+                                        <form class="d-inline" th:action="@{/vista/prestamos/{id}/eliminar(id=${item.id})}" method="post"><button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Eliminar este prestamo?')">Eliminar</button></form>
+                                    </td>
+                                    <div class="modal fade" th:id="'editar-' + ${item.id}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog"><div class="modal-content"><form th:action="@{/vista/prestamos/{id}/actualizar(id=${item.id})}" method="post">
+                                            <div class="modal-header"><h3 class="modal-title fs-5">Editar prestamo</h3><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                            <div class="modal-body">
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Persona</label>
+                                                    <select class="form-select" name="idPersona" required>
+                                                        <option th:each="persona : ${personas}"
+                                                                th:value="${persona.id}"
+                                                                th:selected="${persona.id == item.socio.id}"
+                                                                th:text="${persona.nombre + ' ' + persona.apellidoPaterno}">
+                                                        </option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Libro</label>
+                                                    <select class="form-select" name="idLibro" required>
+                                                        <option th:each="libro : ${libros}"
+                                                                th:value="${libro.isbn}"
+                                                                th:selected="${libro.isbn == item.libro.isbn}"
+                                                                th:text="${libro.titulo}">
+                                                        </option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Fecha de Devolucion</label>
+                                                    <input class="form-control" name="fechaDevolucion" type="datetime-local" th:value="${item.fechaDevolucion}">
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" type="submit">Guardar cambios</button></div>
+                                        </form></div></div>
+                                    </div>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(prestamos)}"><td colspan="6" class="text-center text-secondary py-4">No hay prestamos registrados.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('buscador').addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            document.querySelectorAll('#tablaPrestamos tbody tr').forEach(function (row) {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
