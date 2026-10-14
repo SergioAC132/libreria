@@ -2,6 +2,8 @@ package com.api.libreria.models;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,8 +34,13 @@ public class PrestamoModel {
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaPrestamo;
 
+    // Fecha límite acordada para devolver el libro (opcional)
     @Column
     private LocalDateTime fechaDevolucion;
+
+    // Fecha y hora en que realmente se devolvió el libro; null = préstamo en curso
+    @Column
+    private LocalDateTime fechaDevolucionReal;
 
     @PrePersist
     private void asignarFechaPrestamo() {
@@ -80,5 +87,19 @@ public class PrestamoModel {
 
     public void setFechaDevolucion(LocalDateTime fechaDevolucion) {
         this.fechaDevolucion = fechaDevolucion;
+    }
+
+    public LocalDateTime getFechaDevolucionReal() {
+        return fechaDevolucionReal;
+    }
+
+    public void setFechaDevolucionReal(LocalDateTime fechaDevolucionReal) {
+        this.fechaDevolucionReal = fechaDevolucionReal;
+    }
+
+    // Solo lectura: aparece en las respuestas como "devuelto", pero no se acepta al recibir datos
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public boolean isDevuelto() {
+        return fechaDevolucionReal != null;
     }
 }

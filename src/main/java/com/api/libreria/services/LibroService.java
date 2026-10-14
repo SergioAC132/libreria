@@ -39,7 +39,6 @@ public class LibroService {
         libro.setTitulo(request.getTitulo());
         libro.setAutor(request.getAutor());
         libro.setAñoPublicacion(request.getAñoPublicacion());
-        libro.setEditorial(request.getEditorial());
         libro.setNumeroEjemplares(request.getNumeroEjemplares());
 
         return libroRepository.save(libro);
@@ -62,7 +61,4 @@ public class LibroService {
         return libroRepository.findByañoPublicacion(anio);
     }
 
-    public ArrayList<LibroModel> obtenerLibrosPorEditorial(String editorial) {
-        return libroRepository.findByEditorial(editorial);
-    }
 }

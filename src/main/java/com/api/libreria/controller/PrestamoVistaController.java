@@ -55,7 +55,7 @@ public class PrestamoVistaController {
 
             prestamoService.guardarPrestamo(prestamo);
             atributos.addFlashAttribute("mensaje", "Prestamo registrado correctamente.");
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | IllegalStateException exception) {
             atributos.addFlashAttribute("error", exception.getMessage());
         }
         return "redirect:/vista/prestamos";
@@ -80,7 +80,18 @@ public class PrestamoVistaController {
 
             prestamoService.actualizarPrestamo(request, id);
             atributos.addFlashAttribute("mensaje", "Prestamo actualizado correctamente.");
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            atributos.addFlashAttribute("error", exception.getMessage());
+        }
+        return "redirect:/vista/prestamos";
+    }
+
+    @PostMapping("/vista/prestamos/{id}/devolver")
+    public String devolverPrestamo(@PathVariable Long id, RedirectAttributes atributos) {
+        try {
+            prestamoService.devolverPrestamo(id);
+            atributos.addFlashAttribute("mensaje", "Devolucion registrada. El ejemplar ya esta disponible.");
+        } catch (IllegalArgumentException | IllegalStateException exception) {
             atributos.addFlashAttribute("error", exception.getMessage());
         }
         return "redirect:/vista/prestamos";

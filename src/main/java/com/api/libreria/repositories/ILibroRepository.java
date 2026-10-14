@@ -12,5 +12,4 @@ public interface ILibroRepository extends JpaRepository<LibroModel, Long> {
 
     public ArrayList<LibroModel> findByañoPublicacion(String anio);
 
-    public ArrayList<LibroModel> findByEditorial(String editorial);
 }

@@ -23,9 +23,6 @@ public class LibroModel {
     private String autor;
 
     @Column
-    private String editorial;
-
-    @Column
     private String añoPublicacion;
     
     @Column
@@ -54,14 +51,6 @@ public class LibroModel {
 
     public void setAutor(String autor) {
         this.autor = autor;
-    }
-
-    public String getEditorial() {
-        return editorial;
-    }
-
-    public void setEditorial(String editorial) {
-        this.editorial = editorial;
     }
 
     public String getAñoPublicacion() {

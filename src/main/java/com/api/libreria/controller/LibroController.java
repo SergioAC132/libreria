@@ -6,16 +6,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.api.libreria.models.LibroModel;
 import com.api.libreria.services.LibroService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 
-@Controller
+
+@RestController
 @RequestMapping("/libros")
 public class LibroController {
     
@@ -27,20 +31,14 @@ public class LibroController {
         return this.libroService.obtenerLibros();
     }
 
-    @GetMapping("/{anio}")
+    @GetMapping("/anio/{anio}")
     public ArrayList<LibroModel> obtenerPorAnio(@PathVariable String anio) {
         return this.libroService.obtenerLibrosPorAnio(anio);
     }
     
-    @GetMapping("/{autor}")
+    @GetMapping("/autor/{autor}")
     public ArrayList<LibroModel> obtenerPorAutor(@PathVariable String autor) {
         return this.libroService.obtenerLibrosPorAutor(autor);
-    }
-
-        
-    @GetMapping("/{editorial}")
-    public ArrayList<LibroModel> obtenerPorEditorial(@PathVariable String editorial) {
-        return this.libroService.obtenerLibrosPorEditorial(editorial);
     }
 
 
