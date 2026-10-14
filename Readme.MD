@@ -30,7 +30,7 @@ API REST para gestionar una **biblioteca**: catálogo de libros, socios (persona
 
 ```bash
 # 1. Clonar el repositorio
-git clone <URL-DEL-REPOSITORIO>
+git clone https://github.com/SergioAC132/libreria
 cd libreria
 
 # 2. Configurar las credenciales de MySQL (ver la sección siguiente)
